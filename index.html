@@ -13,30 +13,58 @@
 		</div>
 
 		<script>
-			// Define your chart data
+			// Generate random data for the second line
+			function generateRandomData() {
+				var data = [];
+				for (var i = 0; i < 14; i++) {
+					if (i < 7) {
+						data.push(65 + Math.random() * 35); // Random value between 65 and 100 for the first week
+					} else {
+						data.push(65 + Math.random() * 35 + 10); // Random value between 75 and 110 for the second week
+					}
+				}
+				return data;
+			}
+
+			// Generate date labels for the x-axis
+			function generateDateLabels() {
+				var labels = [];
+				var currentDate = new Date();
+				for (var i = 0; i < 14; i++) {
+					var date = new Date(currentDate.getTime() + i * 24 * 60 * 60 * 1000);
+					labels.push(date.toLocaleDateString());
+				}
+				return labels;
+			}
+
 			var ctx = document.getElementById("myChart").getContext("2d");
 			var myChart = new Chart(ctx, {
 				type: "line",
 				data: {
-					labels: [
-						"January",
-						"February",
-						"March",
-						"April",
-						"May",
-						"June",
-						"July",
-					],
+					labels: generateDateLabels(), // Use the generated date labels
 					datasets: [
 						{
-							label: "My First Dataset",
-							data: [65, 59, 80, 81, 56, 55, 40],
+							label: "Static Line (65)",
+							data: Array(14).fill(65), // Static value of 65 for the first line
 							borderColor: "rgb(75, 192, 192)",
+							tension: 0.1,
+						},
+						{
+							label: "Dynamic Line",
+							data: generateRandomData(), // Randomized data for the second line
+							borderColor: "rgb(255, 99, 132)",
 							tension: 0.1,
 						},
 					],
 				},
-				options: {},
+				options: {
+					scales: {
+						y: {
+							beginAtZero: true,
+							suggestedMax: 100, // Set maximum value for y-axis
+						},
+					},
+				},
 			});
 		</script>
 	</body>
