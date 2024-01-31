@@ -3,22 +3,40 @@
 	<head>
 		<meta charset="UTF-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-		<title>Chart.js Line Chart</title>
+		<title>Efficiency</title>
 		<!-- Include Chart.js library -->
 		<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 	</head>
 	<body>
-		<div style="width: 75%">
+		<div style="width: 100%">
 			<canvas id="myChart"></canvas>
 		</div>
 
 		<script>
+			var chartData = {
+				labels: generateDateLabels(), // Use the generated date labels
+				datasets: [
+					{
+						label: "Target Efisiensi",
+						data: Array(14).fill(65), // Static value of 65 for the first line
+						borderColor: "rgba(60,44,123,255)",
+						tension: 0.1,
+					},
+					{
+						label: "Actual Efficiency",
+						data: generateRandomData(), // Randomized data for the second line
+						borderColor: "rgba(0,145,64,255)",
+						tension: 0.1,
+					},
+				],
+			};
+
 			// Generate random data for the second line
 			function generateRandomData() {
 				var data = [];
 				for (var i = 0; i < 14; i++) {
 					if (i < 7) {
-						data.push(35 + Math.random() * 28); // Random value between 35 and 63 for the first week
+						data.push(50 + Math.random() * 14); // Random value between 50 and 64 for the first week
 					} else {
 						data.push(65 + Math.random() * 35); // Random value between 75 and 110 for the second week
 					}
@@ -38,32 +56,47 @@
 			}
 
 			var ctx = document.getElementById("myChart").getContext("2d");
-			var myChart = new Chart(ctx, {
+			var myLine = new Chart(ctx, {
 				type: "line",
-				data: {
-					labels: generateDateLabels(), // Use the generated date labels
-					datasets: [
-						{
-							label: "Target Efisiensi",
-							data: Array(14).fill(65), // Static value of 65 for the first line
-							borderColor: "rgb(75, 192, 192)",
-							tension: 0.1,
-						},
-						{
-							label: "Actual Efficiency",
-							data: generateRandomData(), // Randomized data for the second line
-							borderColor: "rgb(255, 99, 132)",
-							tension: 0.1,
-						},
-					],
-				},
+				data: chartData,
 				options: {
 					scales: {
 						y: {
 							beginAtZero: true,
 							suggestedMax: 100, // Set maximum value for y-axis
+							ticks: {
+								callback: function (value, index, values) {
+									return value + "%"; // Append "%" to y-axis labels
+								},
+							},
 						},
 					},
+					plugins: {
+						tooltip: false,
+						datalabels: {
+							color: "black",
+							formatter: function (value, context) {
+								return value + "%";
+							},
+						},
+					},
+				},
+				onAnimationComplete: function () {
+					var ctx = this.chart.ctx;
+					ctx.font = this.scale.font;
+					ctx.fillStyle = this.scale.textColor;
+					ctx.textAlign = "center";
+					ctx.textBaseline = "bottom";
+
+					this.data.datasets.forEach(function (dataset) {
+						dataset.data.forEach(function (points, i) {
+							var x =
+								this.scale.x + (this.scale.width / this.data.labels.length) * i;
+							var y =
+								this.scale.y - (this.scale.y - this.calculateY(points)) + 10;
+							ctx.fillText(points, x, y);
+						}, this);
+					}, this);
 				},
 			});
 		</script>
