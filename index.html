@@ -6,6 +6,8 @@
 		<title>Efficiency</title>
 		<!-- Include Chart.js library -->
 		<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+		<!-- Include Chart.js DataLabels plugin -->
+		<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels"></script>
 	</head>
 	<body>
 		<div style="width: 100%">
@@ -13,24 +15,6 @@
 		</div>
 
 		<script>
-			var chartData = {
-				labels: generateDateLabels(), // Use the generated date labels
-				datasets: [
-					{
-						label: "Target Efisiensi",
-						data: Array(14).fill(65), // Static value of 65 for the first line
-						borderColor: "rgba(60,44,123,255)",
-						tension: 0.1,
-					},
-					{
-						label: "Actual Efficiency",
-						data: generateRandomData(), // Randomized data for the second line
-						borderColor: "rgba(0,145,64,255)",
-						tension: 0.1,
-					},
-				],
-			};
-
 			// Generate random data for the second line
 			function generateRandomData() {
 				var data = [];
@@ -50,15 +34,52 @@
 				var currentDate = new Date();
 				for (var i = 0; i < 14; i++) {
 					var date = new Date(currentDate.getTime() + i * 24 * 60 * 60 * 1000);
-					labels.push(date.toLocaleDateString());
+					var formattedDate =
+						date.getDate() +
+						" " +
+						monthNames[date.getMonth()].substr(0, 3) +
+						" " +
+						(date.getFullYear() % 100);
+					labels.push(formattedDate);
 				}
 				return labels;
 			}
 
+			var monthNames = [
+				"Jan",
+				"Feb",
+				"Mar",
+				"Apr",
+				"May",
+				"Jun",
+				"Jul",
+				"Aug",
+				"Sep",
+				"Oct",
+				"Nov",
+				"Dec",
+			];
+
 			var ctx = document.getElementById("myChart").getContext("2d");
-			var myLine = new Chart(ctx, {
+			var myChart = new Chart(ctx, {
 				type: "line",
-				data: chartData,
+				data: {
+					labels: generateDateLabels(), // Use the generated date labels
+					datasets: [
+						{
+							label: "Target Efisiensi",
+							data: Array(14).fill(65), // Static value of 65 for the first line
+							borderColor: "rgba(60,44,123,255)",
+							tension: 0.1,
+						},
+						{
+							label: "Actual Efficiency",
+							data: generateRandomData(), // Randomized data for the second line
+							borderColor: "rgba(0,145,64,255)",
+							tension: 0.1,
+						},
+					],
+				},
 				options: {
 					scales: {
 						y: {
@@ -72,31 +93,14 @@
 						},
 					},
 					plugins: {
-						tooltip: false,
 						datalabels: {
+							display: true,
 							color: "black",
 							formatter: function (value, context) {
-								return value + "%";
+								return value + "%"; // Append "%" to the displayed label
 							},
 						},
 					},
-				},
-				onAnimationComplete: function () {
-					var ctx = this.chart.ctx;
-					ctx.font = this.scale.font;
-					ctx.fillStyle = this.scale.textColor;
-					ctx.textAlign = "center";
-					ctx.textBaseline = "bottom";
-
-					this.data.datasets.forEach(function (dataset) {
-						dataset.data.forEach(function (points, i) {
-							var x =
-								this.scale.x + (this.scale.width / this.data.labels.length) * i;
-							var y =
-								this.scale.y - (this.scale.y - this.calculateY(points)) + 10;
-							ctx.fillText(points, x, y);
-						}, this);
-					}, this);
 				},
 			});
 		</script>
