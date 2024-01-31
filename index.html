@@ -18,9 +18,9 @@
 				var data = [];
 				for (var i = 0; i < 14; i++) {
 					if (i < 7) {
-						data.push(65 + Math.random() * 35); // Random value between 65 and 100 for the first week
+						data.push(0 + Math.random() * 35); // Random value between 65 and 100 for the first week
 					} else {
-						data.push(65 + Math.random() * 35 + 10); // Random value between 75 and 110 for the second week
+						data.push(65 + Math.random() * 35); // Random value between 75 and 110 for the second week
 					}
 				}
 				return data;
@@ -44,13 +44,13 @@
 					labels: generateDateLabels(), // Use the generated date labels
 					datasets: [
 						{
-							label: "Static Line (65)",
+							label: "Target Efisiensi",
 							data: Array(14).fill(65), // Static value of 65 for the first line
 							borderColor: "rgb(75, 192, 192)",
 							tension: 0.1,
 						},
 						{
-							label: "Dynamic Line",
+							label: "Actual Efficiency",
 							data: generateRandomData(), // Randomized data for the second line
 							borderColor: "rgb(255, 99, 132)",
 							tension: 0.1,
