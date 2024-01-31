@@ -4,9 +4,9 @@
 		<meta charset="UTF-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 		<title>Efficiency</title>
-		<!-- Include Chart.js library -->
+
 		<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-		<!-- Include Chart.js DataLabels plugin -->
+
 		<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels"></script>
 	</head>
 	<body>
@@ -15,20 +15,18 @@
 		</div>
 
 		<script>
-			// Generate random data for the second line
 			function generateRandomData() {
 				var data = [];
 				for (var i = 0; i < 14; i++) {
 					if (i < 7) {
-						data.push(50 + Math.random() * 14); // Random value between 50 and 64 for the first week
+						data.push(50 + Math.random() * 14);
 					} else {
-						data.push(65 + Math.random() * 35); // Random value between 75 and 110 for the second week
+						data.push(65 + Math.random() * 35);
 					}
 				}
 				return data;
 			}
 
-			// Generate date labels for the x-axis
 			function generateDateLabels() {
 				var labels = [];
 				var currentDate = new Date();
@@ -64,19 +62,27 @@
 			var myChart = new Chart(ctx, {
 				type: "line",
 				data: {
-					labels: generateDateLabels(), // Use the generated date labels
+					labels: generateDateLabels(),
 					datasets: [
 						{
 							label: "Target Efisiensi",
-							data: Array(14).fill(65), // Static value of 65 for the first line
+							data: Array(14).fill(65),
 							borderColor: "rgba(60,44,123,255)",
 							tension: 0.1,
+							fill: false,
+							backgroundColor: "white",
+							pointStyle: "circle",
+							pointRadius: 4,
 						},
 						{
 							label: "Actual Efficiency",
-							data: generateRandomData(), // Randomized data for the second line
+							data: generateRandomData(),
 							borderColor: "rgba(0,145,64,255)",
 							tension: 0.1,
+							fill: false,
+							backgroundColor: "white",
+							pointStyle: "circle",
+							pointRadius: 4,
 						},
 					],
 				},
@@ -84,22 +90,52 @@
 					scales: {
 						y: {
 							beginAtZero: true,
-							suggestedMax: 100, // Set maximum value for y-axis
+							suggestedMax: 100,
 							ticks: {
 								callback: function (value, index, values) {
-									return value + "%"; // Append "%" to y-axis labels
+									return value + "%";
 								},
 							},
 						},
 					},
 					plugins: {
-						datalabels: {
+						title: {
 							display: true,
-							color: "black",
-							formatter: function (value, context) {
-								return value + "%"; // Append "%" to the displayed label
+							text: "Line Efficiency Performance by Factory",
+							font: {
+								size: 18,
 							},
 						},
+						tooltip: {
+							mode: "index",
+							intersect: false,
+							callbacks: {
+								label: function (context) {
+									var label = context.dataset.label || "";
+									if (label) {
+										label += ": ";
+									}
+									if (context.parsed.y !== null) {
+										label += context.parsed.y.toFixed(2) + "%";
+									}
+									return label;
+								},
+							},
+						},
+					},
+					animations: {
+						radius: {
+							duration: 400,
+							easing: "linear",
+							loop: (context) => context.active,
+						},
+					},
+					hoverRadius: 5,
+					hoverBackgroundColor: "grey",
+					interaction: {
+						mode: "nearest",
+						intersect: false,
+						axis: "x",
 					},
 				},
 			});
